@@ -89,7 +89,7 @@
 <body>
 
 <header>
-    <h1>Welcome to KK DevOps Telugu </h1>
+    <h1>Welcome to KK DevOps Developer Version </h1>
     <h2>KK FUNDA</h2>
 </header>
 
