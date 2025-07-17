@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+	tools
+	{
+		maven "maven-3.9.9"
+	}
+  triggers {
+  githubPush()
+   }
+   parameters {
+  choice(name: 'branchNames', choices: ['master', 'dev'], description: 'Select the branch to build from')
+   }
+
+    stages {
+        stage('git checkout') {
+            steps {
+			notifyBuild('STARTED')
+                git branch: "${params.branchNames}", url: 'https://github.com/nagireddysubhash/maven_web_app.git'
+            }
+        }
+	stage('Build') {
+            steps {
+                sh "mvn clean package"
+            }
+        }
+	stage('Sonar report') {
+            steps {
+                sh "mvn clean sonar:sonar"
+            }
+	}
+	stage('Nexus report') {
+            steps {
+                sh "mvn clean deploy"
+            }
+	}
+	stage('Tomcat report') {
+            steps {
+                sh """
+                curl -u Subhash_jenkins_server:Pandas@143 \
+                --upload-file target/maven-web-application.war \
+                "http://13.62.56.121:8080/manager/text/deploy?path=/maven-web-application&update=true"
+            """
+            }
+        }
+    } //stages ending
+	
+	post {
+	  success {
+		notifyBuild(currentBuild.result)
+	  }
+	  failure {
+		notifyBuild(currentBuild.result)
+	  }
+	}
+} //pipeline ending
+
+def notifyBuild(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESS'
+
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    color = 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESS') {
+    color = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    color = 'RED'
+    colorCode = '#FF0000'
+  }
+
+  // Send notifications
+  slackSend (color: colorCode, message: summary, channel: '#amazon-dev')
+}
