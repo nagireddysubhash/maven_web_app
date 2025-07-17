@@ -89,7 +89,7 @@
 <body>
 
 <header>
-    <h1>Welcome to KK DevOps Telugu Coaching center</h1>
+    <h1>Welcome to KK DevOps Telugu Coaching </h1>
     <h2>KK FUNDA</h2>
 </header>
 
