@@ -9,7 +9,7 @@
 </head>
 </head>
 <body>
-<h1 align="center">Welcome to KK Funda DevOps</h1>
+<h1 align="center">Welcome to KK Funda Telugu & English Devops Training Center </h1>
 <h1 align="center"> KK Devops </h1>
 <hr>
 <br>
